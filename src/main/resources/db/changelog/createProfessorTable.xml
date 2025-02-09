@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <changeSet id="createProfessorTable" author="RomS">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="professor"/>
+            </not>
+        </preConditions>
+        <createTable tableName="professor">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="department" type="varchar(128)"/>
+            
+            <column name="academic_title" type="varchar(32)"/>
+            
+            <column name="academic_degree" type="varchar(16)"/>
+            
+            <column name="type" type="char(3)"/>
+        </createTable>
+        
+        <addForeignKeyConstraint baseTableName="professor"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_professor_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+                                 
+        <rollback>
+            <dropTable tableName="professor"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

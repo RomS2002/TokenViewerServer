@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <changeSet id="createGroupTable" author="RomS">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="studgroup"/>
+            </not>
+        </preConditions>
+        <createTable tableName="studgroup">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="faculty" type="varchar(128)"/>
+            
+            <column name="program_type" type="varchar(32)"/>
+            
+            <column name="program" type="varchar(128)"/>
+            
+            <column name="study_form" type="varchar(32)"/>
+        </createTable>
+        
+        <rollback>
+            <dropTable tableName="studgroup"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
