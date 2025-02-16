@@ -39,7 +39,4 @@ public class ProfessorEntity {
 	
 	@Column(name = "academic_degree")
 	private String academicDegree;
-	
-	@Column(name = "type")
-	private String type;
 }

@@ -45,8 +45,8 @@ public class UserEntity {
 	@Column(name = "enabled_from")
 	private Date enabledFrom;
 	
-	@Column(name = "enabled_to")
-	private Date enabledTo;
+	@Column(name = "enabled_until")
+	private Date enabledUntil;
 	
 	@Column(name = "blocked")
 	private boolean blocked;

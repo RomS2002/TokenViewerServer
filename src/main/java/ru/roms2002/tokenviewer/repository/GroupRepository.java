@@ -9,4 +9,6 @@ import ru.roms2002.tokenviewer.entity.GroupEntity;
 public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
 	
 	public List<GroupEntity> findByNameStartsWith(String str);
+	
+	public List<GroupEntity> findByName(String name);
 }

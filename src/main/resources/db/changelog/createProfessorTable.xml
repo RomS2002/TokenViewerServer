@@ -28,7 +28,6 @@
             
             <column name="academic_degree" type="varchar(16)"/>
             
-            <column name="type" type="char(3)"/>
         </createTable>
         
         <addForeignKeyConstraint baseTableName="professor"

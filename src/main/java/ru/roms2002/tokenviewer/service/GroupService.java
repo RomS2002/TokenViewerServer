@@ -22,6 +22,10 @@ public class GroupService {
 		return groupRepository.findByNameStartsWith(str);
 	}
 	
+	public List<GroupEntity> findByName(String str) {
+		return groupRepository.findByName(str);
+	}
+	
 	public GroupEntity findById(int id) {
 		return groupRepository.findById(id).get();
 	}
