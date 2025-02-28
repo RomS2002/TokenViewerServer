@@ -27,9 +27,20 @@ public class GroupController {
 		return groupService.findAll();
 	}
 	
-	@GetMapping("/name/{startsWith}")
-	public List<GroupEntity> getAllStartsWith(@PathVariable String startsWith) {
-		return groupService.findNameStartsWith(startsWith);
+	@GetMapping("/find")
+	public List<GroupEntity> getAllStartsWith(@RequestParam(value="name", required = false) String startsWith,
+			@RequestParam(required = false) String faculty, @RequestParam(required = false) Integer course,
+			@RequestParam(required = false) String studyForm) {
+		
+		if(startsWith != null)
+			return groupService.findNameStartsWith(startsWith);
+		if(faculty != null)
+			return groupService.findByFacultyStartsWith(faculty);
+		if(course != null)
+			return groupService.findByCourse(course);
+		if(studyForm != null)
+			return groupService.findByStudyFormStartsWith(studyForm);
+		return getAll();
 	}
 	
 	@GetMapping("/get")
