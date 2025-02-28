@@ -10,7 +10,7 @@ import ru.roms2002.tokenviewer.dto.UserDTO;
 import ru.roms2002.tokenviewer.service.UserService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 	
 	@Autowired

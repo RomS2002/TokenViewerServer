@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ru.roms2002.tokenviewer.entity.GroupEntity;
@@ -29,6 +30,11 @@ public class GroupController {
 	@GetMapping("/name/{startsWith}")
 	public List<GroupEntity> getAllStartsWith(@PathVariable String startsWith) {
 		return groupService.findNameStartsWith(startsWith);
+	}
+	
+	@GetMapping("/get")
+	public List<GroupEntity> getGroups(@RequestParam int count) {
+		return groupService.getGroups(count);
 	}
 	
 	@GetMapping("/id/{groupId}")

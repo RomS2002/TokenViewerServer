@@ -53,7 +53,7 @@ public class UserService {
 		
 		UserEntity user = new UserEntity();
 		
-		// Сгенерировать токен
+		// Генерация токена
 		String regToken;
 		
 		do {

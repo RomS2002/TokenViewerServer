@@ -37,4 +37,8 @@ public class GroupService {
 	public void deleteById(int id) {
 		groupRepository.deleteById(id);
 	}
+	
+	public List<GroupEntity> getGroups(int count) {
+		return groupRepository.findFirst(count);
+	}
 }
