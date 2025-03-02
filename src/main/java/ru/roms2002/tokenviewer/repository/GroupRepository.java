@@ -19,6 +19,9 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
 	
 	public List<GroupEntity> findByStudyFormStartsWithAllIgnoreCase(String str);
 	
-	@Query(value="SELECT * FROM studgroup ORDER BY name LIMIT :count", nativeQuery = true)
+	@Query(value = "SELECT DISTINCT faculty FROM studgroup", nativeQuery = true)
+	public List<String> findAllFaculties();
+	
+	@Query(value = "SELECT * FROM studgroup ORDER BY name LIMIT :count", nativeQuery = true)
 	public List<GroupEntity> findFirst(int count);
 }

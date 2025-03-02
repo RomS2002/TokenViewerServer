@@ -58,6 +58,10 @@ public class GroupService {
 		return groupRepository.findByStudyFormStartsWithAllIgnoreCase(startsWith);
 	}
 	
+	public List<String> getFaculties() {
+		return groupRepository.findAllFaculties();
+	}
+	
 	private String formLikePatternByCourse(int course) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(new Date());

@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
 	
+	private Integer id;
+	
 	private String firstName;
 	
 	private String lastName;
@@ -34,4 +36,6 @@ public class UserDTO {
 	private String academicTitle;
 	
 	private String academicDegree;
+	
+	private Boolean isBlocked;
 }

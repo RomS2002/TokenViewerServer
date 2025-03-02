@@ -27,6 +27,11 @@ public class GroupController {
 		return groupService.findAll();
 	}
 	
+	@GetMapping("/faculties")
+	public List<String> getFaculties() {
+		return groupService.getFaculties();
+	}
+	
 	@GetMapping("/find")
 	public List<GroupEntity> getAllStartsWith(@RequestParam(value="name", required = false) String startsWith,
 			@RequestParam(required = false) String faculty, @RequestParam(required = false) Integer course,

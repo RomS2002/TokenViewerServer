@@ -1,6 +1,5 @@
 package ru.roms2002.tokenviewer.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +26,7 @@ public class ProfessorEntity {
 	@Column(name = "id")
 	private int id;
 	
-	@OneToOne(cascade = CascadeType.REMOVE)
+	@OneToOne(cascade = {})
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;
 	
