@@ -2,6 +2,7 @@ package ru.roms2002.tokenviewer.entity;
 
 import java.sql.Date;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -51,9 +52,9 @@ public class UserEntity {
 	@Column(name = "blocked")
 	private boolean blocked;
 	
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private StudentEntity student;
 	
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private ProfessorEntity professor;
 }

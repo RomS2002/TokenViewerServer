@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 
 import ru.roms2002.tokenviewer.entity.GroupEntity;
 import ru.roms2002.tokenviewer.repository.GroupRepository;
+import ru.roms2002.tokenviewer.repository.UserRepository;
 
 @Service
 public class GroupService {
 
 	@Autowired
 	private GroupRepository groupRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	public List<GroupEntity> findAll() {
 		return groupRepository.findAll();
@@ -38,7 +42,11 @@ public class GroupService {
 	}
 	
 	public void deleteById(int id) {
-		groupRepository.deleteById(id);
+		GroupEntity group = groupRepository.findById(id).get();
+		if(group != null) {
+			group.getStudents().forEach(e -> userRepository.delete(e.getUser()));
+			groupRepository.deleteById(id);	
+		}
 	}
 	
 	public List<GroupEntity> getGroups(int count) {

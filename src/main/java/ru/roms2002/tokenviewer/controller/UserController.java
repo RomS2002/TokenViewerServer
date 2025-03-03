@@ -35,13 +35,14 @@ public class UserController {
 	
 	@GetMapping("/find")
 	public List<UserDTO> getAllStartsWith(@RequestParam(required = false) String lastName,
-			@RequestParam(required = false) String faculty, @RequestParam(required = false) Integer course,
-			@RequestParam(required = false) String studyForm) {
+			@RequestParam(required = false) String group, @RequestParam(required = false) String department) {
 		
-		if(lastName != null) {
-			System.out.println("!");
+		if(lastName != null)
 			return userService.findByParamStartsWith("lastName", lastName);
-		}
+		if(group != null)
+			return userService.findByParamStartsWith("group", group);
+		if(department != null)
+			return userService.findByParamStartsWith("department", department);
 		
 		return new ArrayList<>();
 	}

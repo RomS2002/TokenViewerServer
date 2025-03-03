@@ -68,7 +68,7 @@ public class UserService {
 			user.setBlocked(userDTO.getIsBlocked());
 			// Проверка на изменение типа пользователя
 			if(!checkForRoleChange(userDTO)) {
-				if(userDTO.getRole().equals("student")) {
+				if(userDTO.getRole().equals("Студент")) {
 					student.setId(studentRepository.findByUserId(user.getId()).getId());
 				} else {
 					professor.setId(studentRepository.findByUserId(user.getId()).getId());
@@ -96,7 +96,7 @@ public class UserService {
 		user = userRepository.save(user);
 
 		switch (userDTO.getRole()) {
-		case "student":
+		case "Студент":
 			student.setUser(user);
 			student.setReimbursement(userDTO.getReimbursement());
 			GroupEntity group = groupService.findByName(userDTO.getGroupName()).getFirst();
@@ -104,7 +104,7 @@ public class UserService {
 
 			studentRepository.save(student);
 			break;
-		case "professor":
+		case "Преподаватель":
 			professor.setUser(user);
 			professor.setDepartment(userDTO.getDepartment());
 			professor.setAcademicDegree(userDTO.getAcademicDegree());
@@ -121,7 +121,7 @@ public class UserService {
 			return true;
 		// Если роль изменилась, удаляем запись из базы данных
 		if (!oldUser.get().getRole().equals(user.getRole())) {
-			if (oldUser.get().getRole().equals("student")) {
+			if (oldUser.get().getRole().equals("Студент")) {
 				studentRepository.deleteByUser(oldUser.get());
 				return true;
 			} else {
@@ -135,9 +135,9 @@ public class UserService {
 	public void deleteUserById(int id) {
 		UserEntity user = userRepository.findById(id).get();
 		if(user == null) return;
-		if(user.getRole().equals("student"))
+		if(user.getRole().equals("Студент"))
 			studentRepository.delete(user.getStudent());
-		if(user.getRole().equals("professor"))
+		if(user.getRole().equals("Преподаватель"))
 			professorRepository.delete(user.getProfessor());
 		userRepository.delete(user);
 	}
@@ -149,6 +149,12 @@ public class UserService {
 		switch(param) {
 		case "lastName":
 			users = userRepository.findByLastNameStartsWithIgnoreCase(value);
+			break;
+		case "group":
+			users = userRepository.findByGroupNameStartsWithIgnoreCase(value);
+			break;
+		case "department":
+			users = userRepository.findByDepartmentNameStartsWithIgnoreCase(value);
 			break;
 		default:
 			users = new ArrayList<>();	
@@ -165,7 +171,7 @@ public class UserService {
 			userDTO.setEnabledUntil(user.getEnabledUntil());
 			userDTO.setIsBlocked(user.isBlocked());
 			
-			if(user.getRole().equals("student")) {
+			if(user.getRole().equals("Студент")) {
 				StudentEntity student = user.getStudent();
 				userDTO.setGroupName(student.getGroup().getName());
 				userDTO.setReimbursement(student.getReimbursement());
