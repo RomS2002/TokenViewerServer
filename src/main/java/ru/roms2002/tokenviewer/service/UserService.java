@@ -71,7 +71,7 @@ public class UserService {
 				if(userDTO.getRole().equals("Студент")) {
 					student.setId(studentRepository.findByUserId(user.getId()).getId());
 				} else {
-					professor.setId(studentRepository.findByUserId(user.getId()).getId());
+					professor.setId(professorRepository.findByUserId(user.getId()).getId());
 				}
 			}
 		} else {
