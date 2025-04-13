@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 	@Query(value = "SELECT * FROM tokenviewer_db.user WHERE id IN (SELECT user_id FROM tokenviewer_db.professor "
 			+ "WHERE LOWER(professor.department) LIKE ?#{[0].toLowerCase()}%)", nativeQuery = true)
 	List<UserEntity> findByDepartmentNameStartsWithIgnoreCase(String str);
+	
+	List<UserEntity> findByRegTokenAndLastName(String regToken, String lastName);
 }

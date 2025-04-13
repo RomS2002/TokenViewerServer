@@ -60,15 +60,15 @@ public class UserService {
 
 		ProfessorEntity professor = new ProfessorEntity();
 		StudentEntity student = new StudentEntity();
-		
+
 		// Если пользователь уже существует
 		if (userDTO.getId() != null) {
 			user.setId(userDTO.getId());
 			user.setRegToken(userRepository.findById(userDTO.getId()).get().getRegToken());
 			user.setBlocked(userDTO.getIsBlocked());
 			// Проверка на изменение типа пользователя
-			if(!checkForRoleChange(userDTO)) {
-				if(userDTO.getRole().equals("Студент")) {
+			if (!checkForRoleChange(userDTO)) {
+				if (userDTO.getRole().equals("Студент")) {
 					student.setId(studentRepository.findByUserId(user.getId()).getId());
 				} else {
 					professor.setId(professorRepository.findByUserId(user.getId()).getId());
@@ -131,22 +131,23 @@ public class UserService {
 		}
 		return false;
 	}
-	
+
 	public void deleteUserById(int id) {
 		UserEntity user = userRepository.findById(id).get();
-		if(user == null) return;
-		if(user.getRole().equals("Студент"))
+		if (user == null)
+			return;
+		if (user.getRole().equals("Студент"))
 			studentRepository.delete(user.getStudent());
-		if(user.getRole().equals("Преподаватель"))
+		if (user.getRole().equals("Преподаватель"))
 			professorRepository.delete(user.getProfessor());
 		userRepository.delete(user);
 	}
-	
+
 	public List<UserDTO> findByParamStartsWith(String param, String value) {
 		List<UserDTO> userDTOs = new ArrayList<>();
 		List<UserEntity> users;
-		
-		switch(param) {
+
+		switch (param) {
 		case "lastName":
 			users = userRepository.findByLastNameStartsWithIgnoreCase(value);
 			break;
@@ -157,9 +158,9 @@ public class UserService {
 			users = userRepository.findByDepartmentNameStartsWithIgnoreCase(value);
 			break;
 		default:
-			users = new ArrayList<>();	
+			users = new ArrayList<>();
 		}
-		
+
 		users.forEach(user -> {
 			UserDTO userDTO = new UserDTO();
 			userDTO.setId(user.getId());
@@ -170,8 +171,8 @@ public class UserService {
 			userDTO.setEnabledFrom(user.getEnabledFrom());
 			userDTO.setEnabledUntil(user.getEnabledUntil());
 			userDTO.setIsBlocked(user.isBlocked());
-			
-			if(user.getRole().equals("Студент")) {
+
+			if (user.getRole().equals("Студент")) {
 				StudentEntity student = user.getStudent();
 				userDTO.setGroupName(student.getGroup().getName());
 				userDTO.setReimbursement(student.getReimbursement());
@@ -184,7 +185,11 @@ public class UserService {
 
 			userDTOs.add(userDTO);
 		});
-		
+
 		return userDTOs;
+	}
+
+	public List<UserEntity> findByRegTokenAndLastName(String regToken, String lastName) {
+		return userRepository.findByRegTokenAndLastName(regToken, lastName);
 	}
 }
