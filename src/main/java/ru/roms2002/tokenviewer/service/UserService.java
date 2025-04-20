@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import ru.roms2002.tokenviewer.dto.SendMailDTO;
 import ru.roms2002.tokenviewer.dto.UserDTO;
 import ru.roms2002.tokenviewer.entity.GroupEntity;
 import ru.roms2002.tokenviewer.entity.ProfessorEntity;
 import ru.roms2002.tokenviewer.entity.StudentEntity;
 import ru.roms2002.tokenviewer.entity.UserEntity;
+import ru.roms2002.tokenviewer.exceptions.MailServerException;
 import ru.roms2002.tokenviewer.repository.ProfessorRepository;
 import ru.roms2002.tokenviewer.repository.StudentRepository;
 import ru.roms2002.tokenviewer.repository.UserRepository;
@@ -29,10 +31,13 @@ public class UserService {
 	private StudentRepository studentRepository;
 
 	@Autowired
-	ProfessorRepository professorRepository;
+	private ProfessorRepository professorRepository;
 
 	@Autowired
-	GroupService groupService;
+	private GroupService groupService;
+
+	@Autowired
+	private DataTransferService dataTransferService;
 
 	private String generateNewRegToken() {
 
@@ -64,14 +69,17 @@ public class UserService {
 		// Если пользователь уже существует
 		if (userDTO.getId() != null) {
 			user.setId(userDTO.getId());
-			user.setRegToken(userRepository.findById(userDTO.getId()).get().getRegToken());
+			user.setRegToken(userRepository.findById(userDTO.getId()).get()
+					.getRegToken());
 			user.setBlocked(userDTO.getIsBlocked());
 			// Проверка на изменение типа пользователя
 			if (!checkForRoleChange(userDTO)) {
 				if (userDTO.getRole().equals("Студент")) {
-					student.setId(studentRepository.findByUserId(user.getId()).getId());
+					student.setId(studentRepository.findByUserId(user.getId())
+							.getId());
 				} else {
-					professor.setId(professorRepository.findByUserId(user.getId()).getId());
+					professor.setId(professorRepository
+							.findByUserId(user.getId()).getId());
 				}
 			}
 		} else {
@@ -85,6 +93,12 @@ public class UserService {
 			user.setRegToken(regToken);
 			// Новый пользователь всегда не заблокирован
 			user.setBlocked(false);
+
+			SendMailDTO sendMailDTO = new SendMailDTO(regToken,
+					userDTO.getEmail());
+			if (!dataTransferService.sendMail(sendMailDTO))
+				throw new MailServerException(
+						"error processing message sending");
 		}
 
 		user.setFirstName(userDTO.getFirstName());
@@ -99,7 +113,8 @@ public class UserService {
 		case "Студент":
 			student.setUser(user);
 			student.setReimbursement(userDTO.getReimbursement());
-			GroupEntity group = groupService.findByName(userDTO.getGroupName()).getFirst();
+			GroupEntity group = groupService.findByName(userDTO.getGroupName())
+					.getFirst();
 			student.setGroup(group);
 
 			studentRepository.save(student);
@@ -155,7 +170,8 @@ public class UserService {
 			users = userRepository.findByGroupNameStartsWithIgnoreCase(value);
 			break;
 		case "department":
-			users = userRepository.findByDepartmentNameStartsWithIgnoreCase(value);
+			users = userRepository
+					.findByDepartmentNameStartsWithIgnoreCase(value);
 			break;
 		default:
 			users = new ArrayList<>();
@@ -189,7 +205,8 @@ public class UserService {
 		return userDTOs;
 	}
 
-	public List<UserEntity> findByRegTokenAndLastName(String regToken, String lastName) {
+	public List<UserEntity> findByRegTokenAndLastName(String regToken,
+			String lastName) {
 		return userRepository.findByRegTokenAndLastName(regToken, lastName);
 	}
 }

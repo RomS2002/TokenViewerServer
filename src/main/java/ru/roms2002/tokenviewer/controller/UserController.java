@@ -19,31 +19,33 @@ import ru.roms2002.tokenviewer.service.UserService;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	
+
 	@Autowired
-	UserService userService;
-	
+	private UserService userService;
+
 	@PostMapping("/")
 	public void createOrSaveUser(@RequestBody UserDTO userDTO) {
 		userService.createOrSaveUser(userDTO);
 	}
-	
+
 	@DeleteMapping("/{userId}")
 	public void deleteUser(@PathVariable Integer userId) {
 		userService.deleteUserById(userId);
 	}
-	
+
 	@GetMapping("/find")
-	public List<UserDTO> getAllStartsWith(@RequestParam(required = false) String lastName,
-			@RequestParam(required = false) String group, @RequestParam(required = false) String department) {
-		
-		if(lastName != null)
+	public List<UserDTO> getAllStartsWith(
+			@RequestParam(required = false) String lastName,
+			@RequestParam(required = false) String group,
+			@RequestParam(required = false) String department) {
+
+		if (lastName != null)
 			return userService.findByParamStartsWith("lastName", lastName);
-		if(group != null)
+		if (group != null)
 			return userService.findByParamStartsWith("group", group);
-		if(department != null)
+		if (department != null)
 			return userService.findByParamStartsWith("department", department);
-		
+
 		return new ArrayList<>();
 	}
 }

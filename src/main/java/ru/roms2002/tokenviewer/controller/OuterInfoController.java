@@ -17,6 +17,7 @@ public class OuterInfoController {
 	@PostMapping("/checktoken")
 	public boolean checkToken(@RequestBody CheckTokenDTO checkTokenDTO) {
 
-		return !userService.findByRegTokenAndLastName(checkTokenDTO.getToken(), checkTokenDTO.getLastName()).isEmpty();
+		return !userService.findByRegTokenAndLastName(checkTokenDTO.getToken(),
+				checkTokenDTO.getLastName()).isEmpty();
 	}
 }
