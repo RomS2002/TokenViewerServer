@@ -34,8 +34,7 @@ public class UserController {
 	}
 
 	@GetMapping("/find")
-	public List<UserDTO> getAllStartsWith(
-			@RequestParam(required = false) String lastName,
+	public List<UserDTO> getAllStartsWith(@RequestParam(required = false) String lastName,
 			@RequestParam(required = false) String group,
 			@RequestParam(required = false) String department) {
 

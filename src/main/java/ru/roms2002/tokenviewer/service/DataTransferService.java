@@ -15,7 +15,7 @@ import ru.roms2002.tokenviewer.dto.SendMailDTO;
 public class DataTransferService {
 
 	@Value("${infoserver.url}")
-	private String adminpanelURI;
+	private String infoserverURI;
 
 	private final Logger LOGGER = LoggerFactory
 			.getLogger(DataTransferService.class);
@@ -28,7 +28,7 @@ public class DataTransferService {
 
 	public boolean sendMail(SendMailDTO sendMailDTO) {
 		ResponseEntity<Void> response = restClient.post()
-				.uri(adminpanelURI + "/mail/send")
+				.uri(infoserverURI + "/mail/send")
 				.contentType(MediaType.APPLICATION_JSON).body(sendMailDTO)
 				.retrieve().toBodilessEntity();
 

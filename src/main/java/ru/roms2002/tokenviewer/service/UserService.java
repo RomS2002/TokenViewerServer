@@ -39,6 +39,29 @@ public class UserService {
 	@Autowired
 	private DataTransferService dataTransferService;
 
+	public Integer getIdByToken(String token) {
+		return userRepository.findByRegToken(token).getFirst().getId();
+	}
+
+	public UserDTO getById(Integer id) {
+
+		UserEntity user = userRepository.findById(id).get();
+
+		if (user.getRole().equals("Студент")) {
+			StudentEntity student = user.getStudent();
+			return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
+					"Студент", user.getEnabledFrom(), user.getEnabledUntil(),
+					student.getReimbursement(), student.getGroup().getName(), null, null, null,
+					user.isBlocked(), null);
+		}
+
+		ProfessorEntity professor = user.getProfessor();
+		return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
+				"Преподаватель", user.getEnabledFrom(), user.getEnabledUntil(), null, null,
+				professor.getDepartment(), professor.getAcademicTitle(),
+				professor.getAcademicDegree(), user.isBlocked(), null);
+	}
+
 	private String generateNewRegToken() {
 
 		String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -69,17 +92,14 @@ public class UserService {
 		// Если пользователь уже существует
 		if (userDTO.getId() != null) {
 			user.setId(userDTO.getId());
-			user.setRegToken(userRepository.findById(userDTO.getId()).get()
-					.getRegToken());
+			user.setRegToken(userRepository.findById(userDTO.getId()).get().getRegToken());
 			user.setBlocked(userDTO.getIsBlocked());
 			// Проверка на изменение типа пользователя
 			if (!checkForRoleChange(userDTO)) {
 				if (userDTO.getRole().equals("Студент")) {
-					student.setId(studentRepository.findByUserId(user.getId())
-							.getId());
+					student.setId(studentRepository.findByUserId(user.getId()).getId());
 				} else {
-					professor.setId(professorRepository
-							.findByUserId(user.getId()).getId());
+					professor.setId(professorRepository.findByUserId(user.getId()).getId());
 				}
 			}
 		} else {
@@ -94,11 +114,9 @@ public class UserService {
 			// Новый пользователь всегда не заблокирован
 			user.setBlocked(false);
 
-			SendMailDTO sendMailDTO = new SendMailDTO(regToken,
-					userDTO.getEmail());
+			SendMailDTO sendMailDTO = new SendMailDTO(regToken, userDTO.getEmail());
 			if (!dataTransferService.sendMail(sendMailDTO))
-				throw new MailServerException(
-						"error processing message sending");
+				throw new MailServerException("error processing message sending");
 		}
 
 		user.setFirstName(userDTO.getFirstName());
@@ -113,8 +131,7 @@ public class UserService {
 		case "Студент":
 			student.setUser(user);
 			student.setReimbursement(userDTO.getReimbursement());
-			GroupEntity group = groupService.findByName(userDTO.getGroupName())
-					.getFirst();
+			GroupEntity group = groupService.findByName(userDTO.getGroupName()).getFirst();
 			student.setGroup(group);
 
 			studentRepository.save(student);
@@ -170,8 +187,7 @@ public class UserService {
 			users = userRepository.findByGroupNameStartsWithIgnoreCase(value);
 			break;
 		case "department":
-			users = userRepository
-					.findByDepartmentNameStartsWithIgnoreCase(value);
+			users = userRepository.findByDepartmentNameStartsWithIgnoreCase(value);
 			break;
 		default:
 			users = new ArrayList<>();
@@ -205,8 +221,7 @@ public class UserService {
 		return userDTOs;
 	}
 
-	public List<UserEntity> findByRegTokenAndLastName(String regToken,
-			String lastName) {
+	public List<UserEntity> findByRegTokenAndLastName(String regToken, String lastName) {
 		return userRepository.findByRegTokenAndLastName(regToken, lastName);
 	}
 }
