@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import ru.roms2002.tokenviewer.dto.SendMailDTO;
 import ru.roms2002.tokenviewer.dto.UserDTO;
+import ru.roms2002.tokenviewer.dto.UserInListDTO;
 import ru.roms2002.tokenviewer.entity.GroupEntity;
 import ru.roms2002.tokenviewer.entity.ProfessorEntity;
 import ru.roms2002.tokenviewer.entity.StudentEntity;
@@ -223,5 +224,27 @@ public class UserService {
 
 	public List<UserEntity> findByRegTokenAndLastName(String regToken, String lastName) {
 		return userRepository.findByRegTokenAndLastName(regToken, lastName);
+	}
+
+	public List<UserInListDTO> getByLastName(String lastName) {
+		return userRepository.findByLastNameStartsWithIgnoreCase(lastName).stream().map(user -> {
+			if (user.getRole().equals("Студент")) {
+				return new UserInListDTO(user.getId(), getFullName(user), user.getRole(), null,
+						user.getStudent().getGroup().getName());
+			}
+			if (user.getRole().equals("Преподаватель")) {
+				return new UserInListDTO(user.getId(), getFullName(user), user.getRole(),
+						user.getProfessor().getDepartment(), null);
+			}
+			return null;
+		}).toList();
+	}
+
+	private String getFullName(UserEntity user) {
+		if (user.getPatronymic() != null)
+			return String.format("%s %s %s", user.getLastName(), user.getFirstName(),
+					user.getPatronymic());
+
+		return String.format("%s %s", user.getLastName(), user.getFirstName());
 	}
 }

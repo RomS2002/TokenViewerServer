@@ -1,5 +1,7 @@
 package ru.roms2002.tokenviewer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ru.roms2002.tokenviewer.dto.CheckTokenDTO;
 import ru.roms2002.tokenviewer.dto.UserDTO;
+import ru.roms2002.tokenviewer.dto.UserInListDTO;
 import ru.roms2002.tokenviewer.service.UserService;
 
 @RestController
@@ -33,5 +36,10 @@ public class OuterInfoController {
 	@GetMapping("/getUserDetails")
 	public UserDTO getUserById(@RequestParam Integer id) {
 		return userService.getById(id);
+	}
+
+	@GetMapping("/getUsersByLastName")
+	public List<UserInListDTO> getUsersByLastName(@RequestParam("last-name") String lastName) {
+		return userService.getByLastName(lastName);
 	}
 }
