@@ -53,7 +53,7 @@ public class UserService {
 			return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
 					"Студент", user.getEnabledFrom(), user.getEnabledUntil(),
 					student.getReimbursement(), student.getGroup().getName(), null, null, null,
-					user.isBlocked(), null, user.getStudent().getGroup().getName());
+					user.isBlocked(), null, user.getStudent().getGroup().getFaculty());
 		}
 
 		ProfessorEntity professor = user.getProfessor();
