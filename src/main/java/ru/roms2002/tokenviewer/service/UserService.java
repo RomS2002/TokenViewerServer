@@ -146,6 +146,10 @@ public class UserService {
 			professorRepository.save(professor);
 			break;
 		}
+
+		if (user.isBlocked()) {
+			dataTransferService.sendBlocked(user.getId());
+		}
 	}
 
 	private boolean checkForRoleChange(UserDTO user) {

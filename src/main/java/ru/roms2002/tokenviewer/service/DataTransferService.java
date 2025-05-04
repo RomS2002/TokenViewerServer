@@ -17,8 +17,7 @@ public class DataTransferService {
 	@Value("${infoserver.url}")
 	private String infoserverURI;
 
-	private final Logger LOGGER = LoggerFactory
-			.getLogger(DataTransferService.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(DataTransferService.class);
 
 	private final RestClient restClient;
 
@@ -27,10 +26,9 @@ public class DataTransferService {
 	}
 
 	public boolean sendMail(SendMailDTO sendMailDTO) {
-		ResponseEntity<Void> response = restClient.post()
-				.uri(infoserverURI + "/mail/send")
-				.contentType(MediaType.APPLICATION_JSON).body(sendMailDTO)
-				.retrieve().toBodilessEntity();
+		ResponseEntity<Void> response = restClient.post().uri(infoserverURI + "/mail/send")
+				.contentType(MediaType.APPLICATION_JSON).body(sendMailDTO).retrieve()
+				.toBodilessEntity();
 
 		if (response.getStatusCode() == HttpStatus.OK) {
 			LOGGER.info("Mail send request was completed. {}", sendMailDTO);
@@ -39,5 +37,10 @@ public class DataTransferService {
 			LOGGER.error("InfoServer error while processing {}", sendMailDTO);
 			return false;
 		}
+	}
+
+	public void sendBlocked(int userId) {
+		restClient.post().uri(infoserverURI + "/notification/blocked")
+				.contentType(MediaType.APPLICATION_JSON).body(userId).retrieve().toBodilessEntity();
 	}
 }
