@@ -53,14 +53,14 @@ public class UserService {
 			return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
 					"Студент", user.getEnabledFrom(), user.getEnabledUntil(),
 					student.getReimbursement(), student.getGroup().getName(), null, null, null,
-					user.isBlocked(), null);
+					user.isBlocked(), null, user.getStudent().getGroup().getName());
 		}
 
 		ProfessorEntity professor = user.getProfessor();
 		return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
 				"Преподаватель", user.getEnabledFrom(), user.getEnabledUntil(), null, null,
 				professor.getDepartment(), professor.getAcademicTitle(),
-				professor.getAcademicDegree(), user.isBlocked(), null);
+				professor.getAcademicDegree(), user.isBlocked(), null, null);
 	}
 
 	private String generateNewRegToken() {
