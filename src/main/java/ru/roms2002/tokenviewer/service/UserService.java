@@ -245,6 +245,10 @@ public class UserService {
 	}
 
 	private String getFullName(UserEntity user) {
-		return String.format("%s %s", user.getFirstName(), user.getLastName());
+		if (user.getPatronymic() != null) {
+			return String.format("%s %s %s", user.getLastName(), user.getFirstName(),
+					user.getPatronymic());
+		}
+		return String.format("%s %s", user.getLastName(), user.getFirstName());
 	}
 }
