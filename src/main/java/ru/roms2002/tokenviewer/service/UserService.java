@@ -101,10 +101,11 @@ public class UserService {
 			// Проверка на изменение типа пользователя
 			if (!checkForRoleChange(userDTO)) {
 				if (userDTO.getRole().equals("Студент")) {
-					student.setId(studentRepository.findByUserId(user.getId()).getId());
+					student = studentRepository.findByUserId(user.getId());
 				} else {
-					professor.setId(professorRepository.findByUserId(user.getId()).getId());
+					professor = professorRepository.findByUserId(user.getId());
 				}
+			} else {
 				dataTransferService
 						.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(), userDTO.getRole()));
 			}
@@ -186,7 +187,7 @@ public class UserService {
 		return false;
 	}
 
-	public void deleteUserById(int id) {
+	public void deleteById(int id) {
 		UserEntity user = userRepository.findById(id).get();
 		if (user == null)
 			return;

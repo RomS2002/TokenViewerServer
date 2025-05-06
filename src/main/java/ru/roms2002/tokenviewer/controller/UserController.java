@@ -30,7 +30,7 @@ public class UserController {
 
 	@DeleteMapping("/{userId}")
 	public void deleteUser(@PathVariable Integer userId) {
-		userService.deleteUserById(userId);
+		userService.deleteById(userId);
 	}
 
 	@GetMapping("/find")

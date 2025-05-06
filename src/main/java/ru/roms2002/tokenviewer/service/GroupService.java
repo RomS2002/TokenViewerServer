@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import ru.roms2002.tokenviewer.entity.GroupEntity;
 import ru.roms2002.tokenviewer.repository.GroupRepository;
-import ru.roms2002.tokenviewer.repository.UserRepository;
 
 @Service
 public class GroupService {
@@ -19,7 +18,7 @@ public class GroupService {
 	private GroupRepository groupRepository;
 
 	@Autowired
-	private UserRepository userRepository;
+	private UserService userService;
 
 	@Autowired
 	private DataTransferService dataTransferService;
@@ -48,8 +47,9 @@ public class GroupService {
 	public void deleteById(int id) {
 		GroupEntity group = groupRepository.findById(id).get();
 		if (group != null) {
-			group.getStudents().forEach(e -> userRepository.delete(e.getUser()));
+			group.getStudents().forEach(e -> userService.deleteById(e.getUser().getId()));
 			groupRepository.deleteById(id);
+			dataTransferService.sendDeleteGroup(group.getName());
 		}
 	}
 

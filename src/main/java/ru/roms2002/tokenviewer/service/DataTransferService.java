@@ -69,7 +69,13 @@ public class DataTransferService {
 	}
 
 	public void sendUserChangeDepartment(ChangeDepartmentDTO dto) {
-		restClient.post().uri(infoserverURI + "/notification/change-role")
+		restClient.post().uri(infoserverURI + "/notification/change-department")
 				.contentType(MediaType.APPLICATION_JSON).body(dto).retrieve().toBodilessEntity();
+	}
+
+	public void sendDeleteGroup(String groupName) {
+		restClient.post().uri(infoserverURI + "/notification/delete-group")
+				.contentType(MediaType.APPLICATION_JSON).body(groupName).retrieve()
+				.toBodilessEntity();
 	}
 }
