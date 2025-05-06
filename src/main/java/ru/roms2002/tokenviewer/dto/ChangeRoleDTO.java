@@ -17,4 +17,9 @@ public class ChangeRoleDTO {
 	private int userId;
 
 	private String role;
+
+	private String department;
+
+	@JsonProperty("group_name")
+	private String groupName;
 }
