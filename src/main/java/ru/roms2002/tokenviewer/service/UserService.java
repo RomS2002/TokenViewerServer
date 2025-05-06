@@ -108,10 +108,10 @@ public class UserService {
 			} else {
 				if (userDTO.getRole().equals("Студент")) {
 					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
-							userDTO.getRole(), professor.getDepartment(), null));
+							userDTO.getRole(), null, userDTO.getGroupName()));
 				} else {
 					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
-							userDTO.getRole(), null, student.getGroup().getName()));
+							userDTO.getRole(), userDTO.getDepartment(), null));
 				}
 			}
 		} else {
