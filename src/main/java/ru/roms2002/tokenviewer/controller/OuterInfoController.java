@@ -42,4 +42,9 @@ public class OuterInfoController {
 	public List<UserInListDTO> getUsersByLastName(@RequestParam("last-name") String lastName) {
 		return userService.getByLastName(lastName);
 	}
+
+	@GetMapping("/get-departments")
+	public List<String> getAllDepartments() {
+		return userService.getAllDepartments();
+	}
 }

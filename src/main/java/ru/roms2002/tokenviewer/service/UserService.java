@@ -263,6 +263,10 @@ public class UserService {
 		}).toList();
 	}
 
+	public List<String> getAllDepartments() {
+		return professorRepository.findAllDepartments();
+	}
+
 	private String getFullName(UserEntity user) {
 		if (user.getPatronymic() != null) {
 			return String.format("%s %s %s", user.getLastName(), user.getFirstName(),
