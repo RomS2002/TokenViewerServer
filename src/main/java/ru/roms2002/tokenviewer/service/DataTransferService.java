@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import ru.roms2002.tokenviewer.dto.ChangeDepartmentDTO;
+import ru.roms2002.tokenviewer.dto.ChangeRoleDTO;
+import ru.roms2002.tokenviewer.dto.ChangeStudgroupDTO;
 import ru.roms2002.tokenviewer.dto.SendMailDTO;
 
 @Service
@@ -42,5 +45,31 @@ public class DataTransferService {
 	public void sendBlocked(int userId) {
 		restClient.post().uri(infoserverURI + "/notification/blocked")
 				.contentType(MediaType.APPLICATION_JSON).body(userId).retrieve().toBodilessEntity();
+	}
+
+	public void sendNewStudgroup(String groupName) {
+		restClient.post().uri(infoserverURI + "/notification/new-group")
+				.contentType(MediaType.APPLICATION_JSON).body(groupName).retrieve()
+				.toBodilessEntity();
+	}
+
+	public void sendDeleteUser(Integer userId) {
+		restClient.post().uri(infoserverURI + "/notification/delete-user")
+				.contentType(MediaType.APPLICATION_JSON).body(userId).retrieve().toBodilessEntity();
+	}
+
+	public void sendUserChangeStudgroup(ChangeStudgroupDTO dto) {
+		restClient.post().uri(infoserverURI + "/notification/change-group")
+				.contentType(MediaType.APPLICATION_JSON).body(dto).retrieve().toBodilessEntity();
+	}
+
+	public void sendUserChangeRole(ChangeRoleDTO dto) {
+		restClient.post().uri(infoserverURI + "/notification/change-role")
+				.contentType(MediaType.APPLICATION_JSON).body(dto).retrieve().toBodilessEntity();
+	}
+
+	public void sendUserChangeDepartment(ChangeDepartmentDTO dto) {
+		restClient.post().uri(infoserverURI + "/notification/change-role")
+				.contentType(MediaType.APPLICATION_JSON).body(dto).retrieve().toBodilessEntity();
 	}
 }

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import ru.roms2002.tokenviewer.dto.ChangeDepartmentDTO;
+import ru.roms2002.tokenviewer.dto.ChangeRoleDTO;
+import ru.roms2002.tokenviewer.dto.ChangeStudgroupDTO;
 import ru.roms2002.tokenviewer.dto.SendMailDTO;
 import ru.roms2002.tokenviewer.dto.UserDTO;
 import ru.roms2002.tokenviewer.dto.UserInListDTO;
@@ -102,6 +105,8 @@ public class UserService {
 				} else {
 					professor.setId(professorRepository.findByUserId(user.getId()).getId());
 				}
+				dataTransferService
+						.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(), userDTO.getRole()));
 			}
 		} else {
 			// Иначе - генерируем токен
@@ -130,6 +135,12 @@ public class UserService {
 
 		switch (userDTO.getRole()) {
 		case "Студент":
+			if (student.getGroup() != null
+					&& !student.getGroup().getName().equals(userDTO.getGroupName())) {
+				dataTransferService.sendUserChangeStudgroup(
+						new ChangeStudgroupDTO(userDTO.getId(), userDTO.getGroupName()));
+			}
+
 			student.setUser(user);
 			student.setReimbursement(userDTO.getReimbursement());
 			GroupEntity group = groupService.findByName(userDTO.getGroupName()).getFirst();
@@ -138,6 +149,12 @@ public class UserService {
 			studentRepository.save(student);
 			break;
 		case "Преподаватель":
+			if (professor.getDepartment() != null
+					&& !professor.getDepartment().equals(userDTO.getDepartment())) {
+				dataTransferService.sendUserChangeDepartment(
+						new ChangeDepartmentDTO(userDTO.getId(), userDTO.getDepartment()));
+			}
+
 			professor.setUser(user);
 			professor.setDepartment(userDTO.getDepartment());
 			professor.setAcademicDegree(userDTO.getAcademicDegree());
@@ -178,6 +195,7 @@ public class UserService {
 		if (user.getRole().equals("Преподаватель"))
 			professorRepository.delete(user.getProfessor());
 		userRepository.delete(user);
+		dataTransferService.sendDeleteUser(user.getId());
 	}
 
 	public List<UserDTO> findByParamStartsWith(String param, String value) {
