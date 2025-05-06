@@ -106,9 +106,13 @@ public class UserService {
 					professor = professorRepository.findByUserId(user.getId());
 				}
 			} else {
-				dataTransferService
-						.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(), userDTO.getRole(),
-								professor.getDepartment(), student.getGroup().getName()));
+				if (userDTO.getRole().equals("Студент")) {
+					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
+							userDTO.getRole(), professor.getDepartment(), null));
+				} else {
+					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
+							userDTO.getRole(), null, student.getGroup().getName()));
+				}
 			}
 		} else {
 			// Иначе - генерируем токен
