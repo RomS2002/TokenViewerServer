@@ -6,6 +6,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import ru.roms2002.tokenviewer.entity.GroupEntity;
@@ -16,9 +19,6 @@ public class GroupService {
 
 	@Autowired
 	private GroupRepository groupRepository;
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private DataTransferService dataTransferService;
@@ -35,19 +35,21 @@ public class GroupService {
 		return groupRepository.findByName(str);
 	}
 
+	@Cacheable("groups")
 	public GroupEntity findById(int id) {
 		return groupRepository.findById(id).get();
 	}
 
+	@CachePut("groups")
 	public void save(GroupEntity group) {
 		groupRepository.save(group);
 		dataTransferService.sendNewStudgroup(group.getName());
 	}
 
+	@CacheEvict("groups")
 	public void deleteById(int id) {
-		GroupEntity group = groupRepository.findById(id).get();
+		GroupEntity group = findById(id);
 		if (group != null) {
-			group.getStudents().forEach(e -> userService.deleteById(e.getUser().getId()));
 			groupRepository.deleteById(id);
 			dataTransferService.sendDeleteGroup(group.getName());
 		}

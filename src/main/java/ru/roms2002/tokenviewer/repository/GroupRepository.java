@@ -8,20 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 import ru.roms2002.tokenviewer.entity.GroupEntity;
 
 public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
-	
+
 	public List<GroupEntity> findByNameStartsWithAllIgnoreCase(String str);
-	
+
 	public List<GroupEntity> findByName(String name);
-	
+
 	public List<GroupEntity> findByFacultyStartsWithAllIgnoreCase(String str);
-	
+
 	public List<GroupEntity> findByNameLike(String likePattern);
-	
+
 	public List<GroupEntity> findByStudyFormStartsWithAllIgnoreCase(String str);
-	
-	@Query(value = "SELECT DISTINCT faculty FROM studgroup", nativeQuery = true)
+
+	@Query("select distinct faculty from GroupEntity")
 	public List<String> findAllFaculties();
-	
-	@Query(value = "SELECT * FROM studgroup ORDER BY name LIMIT :count", nativeQuery = true)
+
+	@Query("from GroupEntity order by name limit :count")
 	public List<GroupEntity> findFirst(int count);
 }

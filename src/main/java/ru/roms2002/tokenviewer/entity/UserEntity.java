@@ -25,36 +25,32 @@ public class UserEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
-	
+
 	@Column(name = "reg_token")
 	private String regToken;
-	
+
 	@Column(name = "first_name")
 	private String firstName;
-	
+
 	@Column(name = "last_name")
 	private String lastName;
-	
-	@Column(name = "patronymic")
+
 	private String patronymic;
-	
-	@Column(name = "role")
+
 	private String role;
-	
+
 	@Column(name = "enabled_from")
 	private Date enabledFrom;
-	
+
 	@Column(name = "enabled_until")
 	private Date enabledUntil;
-	
-	@Column(name = "blocked")
+
 	private boolean blocked;
-	
-	@OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private StudentEntity student;
-	
-	@OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private ProfessorEntity professor;
 }

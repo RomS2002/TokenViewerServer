@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,28 +24,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GroupEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
-	
-	@Column(name = "name")
+
 	private String name;
-	
-	@Column(name = "faculty")
+
 	private String faculty;
-	
+
 	@Column(name = "program_type")
 	private String programType;
-	
-	@Column(name = "program")
+
 	private String program;
-	
+
 	@Column(name = "study_form")
 	private String studyForm;
-	
+
 	@JsonIgnore
-	@OneToMany(mappedBy = "group")
+	@OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
 	private List<StudentEntity> students;
 }

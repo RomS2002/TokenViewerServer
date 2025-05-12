@@ -12,7 +12,7 @@ public interface ProfessorRepository extends JpaRepository<ProfessorEntity, Inte
 
 	public void deleteByUser(UserEntity user);
 
-	@Query(value = "SELECT * FROM professor WHERE user_id = :id", nativeQuery = true)
+	@Query("from ProfessorEntity where user.id = :id")
 	public ProfessorEntity findByUserId(Integer id);
 
 	@Query("select distinct department from ProfessorEntity")

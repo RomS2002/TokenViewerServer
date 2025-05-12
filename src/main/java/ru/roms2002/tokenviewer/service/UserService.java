@@ -6,22 +6,18 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import ru.roms2002.tokenviewer.dto.ChangeDepartmentDTO;
-import ru.roms2002.tokenviewer.dto.ChangeRoleDTO;
-import ru.roms2002.tokenviewer.dto.ChangeStudgroupDTO;
 import ru.roms2002.tokenviewer.dto.SendMailDTO;
 import ru.roms2002.tokenviewer.dto.UserDTO;
 import ru.roms2002.tokenviewer.dto.UserInListDTO;
-import ru.roms2002.tokenviewer.entity.GroupEntity;
 import ru.roms2002.tokenviewer.entity.ProfessorEntity;
 import ru.roms2002.tokenviewer.entity.StudentEntity;
 import ru.roms2002.tokenviewer.entity.UserEntity;
 import ru.roms2002.tokenviewer.exceptions.MailServerException;
 import ru.roms2002.tokenviewer.repository.ProfessorRepository;
-import ru.roms2002.tokenviewer.repository.StudentRepository;
 import ru.roms2002.tokenviewer.repository.UserRepository;
 
 @Service
@@ -30,9 +26,6 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private StudentRepository studentRepository;
 
 	@Autowired
 	private ProfessorRepository professorRepository;
@@ -47,9 +40,19 @@ public class UserService {
 		return userRepository.findByRegToken(token).getFirst().getId();
 	}
 
+	@Cacheable("users")
+	public UserEntity findById(int userId) {
+		Optional<UserEntity> tmp = userRepository.findById(userId);
+		if (tmp.isEmpty())
+			return null;
+		return tmp.get();
+	}
+
 	public UserDTO getById(Integer id) {
 
-		UserEntity user = userRepository.findById(id).get();
+		UserEntity user = findById(id);
+		if (user == null)
+			return null;
 
 		if (user.getRole().equals("Студент")) {
 			StudentEntity student = user.getStudent();
@@ -89,117 +92,59 @@ public class UserService {
 	public void createOrSaveUser(UserDTO userDTO) {
 
 		UserEntity user = new UserEntity();
+		user.setFirstName(userDTO.getFirstName());
+		user.setLastName(userDTO.getLastName());
+		user.setPatronymic(userDTO.getPatronymic());
+		user.setEnabledFrom(userDTO.getEnabledFrom());
+		user.setEnabledUntil(userDTO.getEnabledUntil());
+		user.setRole(userDTO.getRole());
 
-		ProfessorEntity professor = new ProfessorEntity();
-		StudentEntity student = new StudentEntity();
-
-		// Если пользователь уже существует
-		if (userDTO.getId() != null) {
-			user.setId(userDTO.getId());
-			user.setRegToken(userRepository.findById(userDTO.getId()).get().getRegToken());
-			user.setBlocked(userDTO.getIsBlocked());
-			// Проверка на изменение типа пользователя
-			if (!checkForRoleChange(userDTO)) {
-				if (userDTO.getRole().equals("Студент")) {
-					student = studentRepository.findByUserId(user.getId());
-				} else {
-					professor = professorRepository.findByUserId(user.getId());
-				}
-			} else {
-				if (userDTO.getRole().equals("Студент")) {
-					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
-							userDTO.getRole(), null, userDTO.getGroupName()));
-				} else {
-					dataTransferService.sendUserChangeRole(new ChangeRoleDTO(userDTO.getId(),
-							userDTO.getRole(), userDTO.getDepartment(), null));
-				}
-			}
-		} else {
-			// Иначе - генерируем токен
+		if (userDTO.getId() == null) {
 			String regToken;
-
 			do {
 				regToken = generateNewRegToken();
 			} while (!checkRegToken(regToken));
 
 			user.setRegToken(regToken);
-			// Новый пользователь всегда не заблокирован
 			user.setBlocked(false);
 
 			SendMailDTO sendMailDTO = new SendMailDTO(regToken, userDTO.getEmail());
 			if (!dataTransferService.sendMail(sendMailDTO))
 				throw new MailServerException("error processing message sending");
+		} else {
+			user.setId(userDTO.getId());
+			user.setRegToken(findById(userDTO.getId()).getRegToken());
+			user.setBlocked(userDTO.getIsBlocked());
 		}
 
-		user.setFirstName(userDTO.getFirstName());
-		user.setLastName(userDTO.getLastName());
-		user.setPatronymic(userDTO.getPatronymic());
-		user.setRole(userDTO.getRole());
-		user.setEnabledFrom(userDTO.getEnabledFrom());
-		user.setEnabledUntil(userDTO.getEnabledUntil());
-		user = userRepository.save(user);
-
-		switch (userDTO.getRole()) {
-		case "Студент":
-			if (student.getGroup() != null
-					&& !student.getGroup().getName().equals(userDTO.getGroupName())) {
-				dataTransferService.sendUserChangeStudgroup(
-						new ChangeStudgroupDTO(userDTO.getId(), userDTO.getGroupName()));
-			}
-
-			student.setUser(user);
+		if (userDTO.getRole().equals("Студент")) {
+			StudentEntity student = new StudentEntity();
+			student.setGroup(groupService.findByName(userDTO.getGroupName()).get(0));
 			student.setReimbursement(userDTO.getReimbursement());
-			GroupEntity group = groupService.findByName(userDTO.getGroupName()).getFirst();
-			student.setGroup(group);
-
-			studentRepository.save(student);
-			break;
-		case "Преподаватель":
-			if (professor.getDepartment() != null
-					&& !professor.getDepartment().equals(userDTO.getDepartment())) {
-				dataTransferService.sendUserChangeDepartment(
-						new ChangeDepartmentDTO(userDTO.getId(), userDTO.getDepartment()));
-			}
-
-			professor.setUser(user);
-			professor.setDepartment(userDTO.getDepartment());
+			student.setUser(user);
+			user.setStudent(student);
+		} else {
+			ProfessorEntity professor = new ProfessorEntity();
 			professor.setAcademicDegree(userDTO.getAcademicDegree());
 			professor.setAcademicTitle(userDTO.getAcademicTitle());
-
-			professorRepository.save(professor);
-			break;
+			professor.setDepartment(userDTO.getDepartment());
+			professor.setUser(user);
+			user.setProfessor(professor);
 		}
 
-		if (user.isBlocked()) {
-			dataTransferService.sendBlocked(user.getId());
-		}
+		user = save(user);
+		System.out.println(user.getProfessor());
+		System.out.println(user.getStudent());
 	}
 
-	private boolean checkForRoleChange(UserDTO user) {
-		Optional<UserEntity> oldUser = userRepository.findById(user.getId());
-		if (!oldUser.isPresent())
-			return true;
-		// Если роль изменилась, удаляем запись из базы данных
-		if (!oldUser.get().getRole().equals(user.getRole())) {
-			if (oldUser.get().getRole().equals("Студент")) {
-				studentRepository.deleteByUser(oldUser.get());
-				return true;
-			} else {
-				professorRepository.deleteByUser(oldUser.get());
-				return true;
-			}
-		}
-		return false;
+	private UserEntity save(UserEntity user) {
+		return userRepository.save(user);
 	}
 
 	public void deleteById(int id) {
-		UserEntity user = userRepository.findById(id).get();
+		UserEntity user = findById(id);
 		if (user == null)
 			return;
-		if (user.getRole().equals("Студент"))
-			studentRepository.delete(user.getStudent());
-		if (user.getRole().equals("Преподаватель"))
-			professorRepository.delete(user.getProfessor());
 		userRepository.delete(user);
 		dataTransferService.sendDeleteUser(user.getId());
 	}

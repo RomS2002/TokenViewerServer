@@ -20,22 +20,20 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfessorEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
-	
+
 	@OneToOne(cascade = {})
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;
-	
-	@Column(name = "department")
+
 	private String department;
-	
+
 	@Column(name = "academic_title")
 	private String academicTitle;
-	
+
 	@Column(name = "academic_degree")
 	private String academicDegree;
 }

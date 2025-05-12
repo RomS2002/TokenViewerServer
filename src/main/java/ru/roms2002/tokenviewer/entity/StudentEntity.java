@@ -1,6 +1,6 @@
 package ru.roms2002.tokenviewer.entity;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,19 +21,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudentEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
-	
-	@OneToOne(cascade = {})
+
+	@OneToOne(cascade = { CascadeType.REMOVE })
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;
-	
-	@Column(name = "reimbursement")
+
 	private String reimbursement;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "group_id", referencedColumnName = "id")
 	private GroupEntity group;
