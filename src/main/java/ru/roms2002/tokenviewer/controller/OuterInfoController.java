@@ -34,8 +34,13 @@ public class OuterInfoController {
 	}
 
 	@GetMapping("/getUserDetails")
-	public UserDTO getUserById(@RequestParam Integer id) {
-		return userService.getById(id);
+	public UserDTO getUserById(@RequestParam(required = false) Integer id,
+			@RequestParam(required = false) String token) {
+		if (id != null)
+			return userService.getById(id);
+		if (token != null)
+			return userService.findByRegToken(token);
+		return null;
 	}
 
 	@GetMapping("/getUsersByLastName")

@@ -54,19 +54,7 @@ public class UserService {
 		if (user == null)
 			return null;
 
-		if (user.getRole().equals("Студент")) {
-			StudentEntity student = user.getStudent();
-			return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
-					"Студент", user.getEnabledFrom(), user.getEnabledUntil(),
-					student.getReimbursement(), student.getGroup().getName(), null, null, null,
-					user.isBlocked(), null, user.getStudent().getGroup().getFaculty());
-		}
-
-		ProfessorEntity professor = user.getProfessor();
-		return new UserDTO(id, user.getFirstName(), user.getLastName(), user.getPatronymic(),
-				"Преподаватель", user.getEnabledFrom(), user.getEnabledUntil(), null, null,
-				professor.getDepartment(), professor.getAcademicTitle(),
-				professor.getAcademicDegree(), user.isBlocked(), null, null);
+		return convertEntityToDTO(user);
 	}
 
 	private String generateNewRegToken() {
@@ -133,8 +121,6 @@ public class UserService {
 		}
 
 		user = save(user);
-		System.out.println(user.getProfessor());
-		System.out.println(user.getStudent());
 	}
 
 	private UserEntity save(UserEntity user) {
@@ -223,5 +209,30 @@ public class UserService {
 					user.getPatronymic());
 		}
 		return String.format("%s %s", user.getLastName(), user.getFirstName());
+	}
+
+	public UserDTO findByRegToken(String token) {
+		List<UserEntity> tmp = userRepository.findByRegToken(token);
+		if (!tmp.isEmpty())
+			return convertEntityToDTO(tmp.get(0));
+		return null;
+	}
+
+	private UserDTO convertEntityToDTO(UserEntity user) {
+
+		if (user.getRole().equals("Студент")) {
+			StudentEntity student = user.getStudent();
+			return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(),
+					user.getPatronymic(), "Студент", user.getEnabledFrom(), user.getEnabledUntil(),
+					student.getReimbursement(), student.getGroup().getName(), null, null, null,
+					user.isBlocked(), null, user.getStudent().getGroup().getFaculty());
+		}
+
+		ProfessorEntity professor = user.getProfessor();
+		return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(),
+				user.getPatronymic(), "Преподаватель", user.getEnabledFrom(),
+				user.getEnabledUntil(), null, null, professor.getDepartment(),
+				professor.getAcademicTitle(), professor.getAcademicDegree(), user.isBlocked(), null,
+				null);
 	}
 }
